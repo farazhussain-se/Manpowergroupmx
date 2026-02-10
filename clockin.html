@@ -12,6 +12,13 @@
       padding: 0;
       background: transparent;
     }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -21,10 +28,11 @@
     const { useState, useEffect } = React;
     const e = React.createElement;
 
-    // Lucide Icons as inline SVG components
-    const MapPin = () => e('svg', { 
+    // Icons
+    const MapPin = ({ className = '' }) => e('svg', { 
       width: 16, height: 16, viewBox: '0 0 24 24', 
-      fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+      fill: 'none', stroke: 'currentColor', strokeWidth: 2,
+      className
     }, 
       e('path', { d: 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z' }),
       e('circle', { cx: 12, cy: 10, r: 3 })
@@ -38,13 +46,43 @@
       e('path', { d: 'M7 11V7a5 5 0 0 1 10 0v4' })
     );
 
-    const Clock = ({ className = '', width = 24, height = 24 }) => e('svg', { 
+    const Clock = ({ className = '', width = 24, height = 24, strokeWidth = 2 }) => e('svg', { 
       width, height, viewBox: '0 0 24 24', 
-      fill: 'none', stroke: 'currentColor', strokeWidth: 2.5,
+      fill: 'none', stroke: 'currentColor', strokeWidth,
       className
     },
       e('circle', { cx: 12, cy: 12, r: 10 }),
       e('polyline', { points: '12 6 12 12 16 14' })
+    );
+
+    const CheckCircle = ({ className = '' }) => e('svg', {
+      width: 20, height: 20, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: 2,
+      className
+    },
+      e('path', { d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
+      e('polyline', { points: '22 4 12 14.01 9 11.01' })
+    );
+
+    const Calendar = ({ className = '' }) => e('svg', {
+      width: 16, height: 16, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: 2,
+      className
+    },
+      e('rect', { x: 3, y: 4, width: 18, height: 18, rx: 2, ry: 2 }),
+      e('line', { x1: 16, y1: 2, x2: 16, y2: 6 }),
+      e('line', { x1: 8, y1: 2, x2: 8, y2: 6 }),
+      e('line', { x1: 3, y1: 10, x2: 21, y2: 10 })
+    );
+
+    const LogOut = ({ className = '' }) => e('svg', {
+      width: 24, height: 24, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: 2,
+      className
+    },
+      e('path', { d: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4' }),
+      e('polyline', { points: '16 17 21 12 16 7' }),
+      e('line', { x1: 21, y1: 12, x2: 9, y2: 12 })
     );
 
     function ClockInWidget() {
@@ -55,67 +93,296 @@
         month: 'long' 
       });
 
-      return e('div', { className: 'w-full max-w-md mx-auto p-4' },
-        e('div', { className: 'bg-white rounded-xl shadow-lg overflow-hidden' },
-          
-          // Header Section
-          e('div', { className: 'bg-gradient-to-r from-[#1D2633] to-[#2a3544] px-6 py-5' },
-            e('h2', { className: 'text-white text-2xl font-semibold mb-1' }, 'Hola, Carlos 👋'),
-            e('p', { className: 'text-gray-300 text-sm capitalize' }, formattedDate)
-          ),
+      // Mock shift history
+      const pastShifts = [
+        { date: 'Lun, 9 Feb', clockIn: '07:02', clockOut: '15:05', hours: '8.05' },
+        { date: 'Vie, 6 Feb', clockIn: '06:58', clockOut: '15:01', hours: '8.05' },
+        { date: 'Jue, 5 Feb', clockIn: '07:01', clockOut: '15:03', hours: '8.03' }
+      ];
 
-          // Main Content
-          e('div', { className: 'px-6 py-8' },
+      const [status, setStatus] = useState('pre-shift'); // 'pre-shift', 'on-shift', 'post-shift'
+      const [clockInTime, setClockInTime] = useState(null);
+      const [currentTime, setCurrentTime] = useState(new Date());
+      const [showSuccess, setShowSuccess] = useState(false);
+
+      // Update current time every second when on shift
+      useEffect(() => {
+        if (status === 'on-shift') {
+          const timer = setInterval(() => {
+            setCurrentTime(new Date());
+          }, 1000);
+          return () => clearInterval(timer);
+        }
+      }, [status]);
+
+      const handleClockIn = () => {
+        const now = new Date();
+        setClockInTime(now);
+        setStatus('on-shift');
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      };
+
+      const handleClockOut = () => {
+        setStatus('post-shift');
+      };
+
+      const formatTime = (date) => {
+        return date.toLocaleTimeString('es-MX', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      };
+
+      const calculateElapsedTime = () => {
+        if (!clockInTime) return '00:00:00';
+        const diff = Math.floor((currentTime - clockInTime) / 1000);
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      };
+
+      // PRE-SHIFT VIEW
+      if (status === 'pre-shift') {
+        return e('div', { className: 'w-full max-w-md mx-auto p-4' },
+          e('div', { className: 'bg-white rounded-xl shadow-lg overflow-hidden' },
             
-            // Live Status Badge
-            e('div', { className: 'flex items-center justify-center mb-8' },
-              e('div', { className: 'inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2' },
-                e('div', { className: 'relative flex items-center' },
-                  e(MapPin),
-                  e('span', { className: 'absolute -top-1 -right-1 flex h-2 w-2' },
-                    e('span', { className: 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75' }),
-                    e('span', { className: 'relative inline-flex rounded-full h-2 w-2 bg-emerald-500' })
+            // Header
+            e('div', { className: 'bg-gradient-to-r from-[#1D2633] to-[#2a3544] px-6 py-5' },
+              e('h2', { className: 'text-white text-2xl font-semibold mb-1' }, 'Hola, Carlos 👋'),
+              e('p', { className: 'text-gray-300 text-sm capitalize' }, formattedDate)
+            ),
+
+            // Main Content
+            e('div', { className: 'px-6 py-8' },
+              
+              // Live Status
+              e('div', { className: 'flex items-center justify-center mb-8' },
+                e('div', { className: 'inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2' },
+                  e('div', { className: 'relative flex items-center' },
+                    e(MapPin),
+                    e('span', { className: 'absolute -top-1 -right-1 flex h-2 w-2' },
+                      e('span', { className: 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75' }),
+                      e('span', { className: 'relative inline-flex rounded-full h-2 w-2 bg-emerald-500' })
+                    )
+                  ),
+                  e('span', { className: 'text-emerald-700 font-medium text-sm' }, 
+                    'Planta Cuautitlán (En Rango)'
                   )
+                )
+              ),
+
+              // Clock In Button
+              e('div', { className: 'flex justify-center mb-6' },
+                e('button', { 
+                  className: 'relative group',
+                  onClick: handleClockIn,
+                  'aria-label': 'Entrar al turno'
+                },
+                  e('div', { className: 'absolute inset-0 rounded-full bg-[#00C7D1] opacity-20 animate-pulse' }),
+                  e('div', { 
+                    className: 'absolute -inset-2 rounded-full bg-[#00C7D1] opacity-10 animate-ping',
+                    style: { animationDuration: '2s' }
+                  }),
+                  e('div', { className: 'relative w-48 h-48 rounded-full bg-gradient-to-br from-[#00C7D1] to-[#00a8b0] shadow-2xl flex flex-col items-center justify-center transition-transform duration-200 group-hover:scale-105 group-active:scale-95 cursor-pointer' },
+                    e(Clock, { className: 'w-12 h-12 text-white mb-3', width: 48, height: 48, strokeWidth: 2.5 }),
+                    e('span', { className: 'text-white text-xl font-bold' }, 'Entrar al'),
+                    e('span', { className: 'text-white text-xl font-bold' }, 'Turno')
+                  )
+                )
+              ),
+
+              // Shift Info
+              e('div', { className: 'bg-gray-50 rounded-lg px-4 py-3 mb-6' },
+                e('div', { className: 'flex items-center justify-center gap-2 text-gray-700' },
+                  e(Clock, { className: 'w-4 h-4 text-[#1D2633]', width: 16, height: 16 }),
+                  e('span', { className: 'text-sm font-medium' }, 'Turno asignado:'),
+                  e('span', { className: 'text-sm font-bold text-[#1D2633]' }, '07:00 - 15:00')
+                )
+              ),
+
+              // Trust Signal
+              e('div', { className: 'flex items-center justify-center gap-2 text-gray-500 mb-8' },
+                e(Lock),
+                e('span', { className: 'text-xs' }, 'Geolocalización Activa & Segura')
+              ),
+
+              // Shift History
+              e('div', { className: 'border-t border-gray-200 pt-6' },
+                e('h3', { className: 'text-[#1D2633] font-semibold mb-4 flex items-center gap-2' },
+                  e(Calendar),
+                  'Turnos Recientes'
                 ),
-                e('span', { className: 'text-emerald-700 font-medium text-sm' }, 
-                  'Planta Cuautitlán (En Rango)'
+                e('div', { className: 'space-y-3' },
+                  ...pastShifts.map((shift, idx) =>
+                    e('div', { 
+                      key: idx,
+                      className: 'bg-gray-50 rounded-lg p-3 flex justify-between items-center'
+                    },
+                      e('div', {},
+                        e('p', { className: 'text-sm font-medium text-gray-900' }, shift.date),
+                        e('p', { className: 'text-xs text-gray-500 mt-1' }, 
+                          `${shift.clockIn} - ${shift.clockOut}`
+                        )
+                      ),
+                      e('div', { className: 'text-right' },
+                        e('p', { className: 'text-lg font-bold text-[#00C7D1]' }, shift.hours),
+                        e('p', { className: 'text-xs text-gray-500' }, 'horas')
+                      )
+                    )
+                  )
                 )
               )
-            ),
-
-            // Hero Button
-            e('div', { className: 'flex justify-center mb-6' },
-              e('button', { className: 'relative group', 'aria-label': 'Entrar al turno' },
-                e('div', { className: 'absolute inset-0 rounded-full bg-[#00C7D1] opacity-20 animate-pulse' }),
-                e('div', { 
-                  className: 'absolute -inset-2 rounded-full bg-[#00C7D1] opacity-10 animate-ping',
-                  style: { animationDuration: '2s' }
-                }),
-                e('div', { className: 'relative w-48 h-48 rounded-full bg-gradient-to-br from-[#00C7D1] to-[#00a8b0] shadow-2xl flex flex-col items-center justify-center transition-transform duration-200 group-hover:scale-105 group-active:scale-95' },
-                  e(Clock, { className: 'w-12 h-12 text-white mb-3', width: 48, height: 48 }),
-                  e('span', { className: 'text-white text-xl font-bold' }, 'Entrar al'),
-                  e('span', { className: 'text-white text-xl font-bold' }, 'Turno')
-                )
-              )
-            ),
-
-            // Shift Info
-            e('div', { className: 'bg-gray-50 rounded-lg px-4 py-3 mb-6' },
-              e('div', { className: 'flex items-center justify-center gap-2 text-gray-700' },
-                e(Clock, { className: 'w-4 h-4 text-[#1D2633]', width: 16, height: 16 }),
-                e('span', { className: 'text-sm font-medium' }, 'Turno asignado:'),
-                e('span', { className: 'text-sm font-bold text-[#1D2633]' }, '07:00 - 15:00')
-              )
-            ),
-
-            // Trust Signal
-            e('div', { className: 'flex items-center justify-center gap-2 text-gray-500' },
-              e(Lock),
-              e('span', { className: 'text-xs' }, 'Geolocalización Activa & Segura')
             )
           )
-        )
-      );
+        );
+      }
+
+      // ON-SHIFT VIEW
+      if (status === 'on-shift') {
+        return e('div', { className: 'w-full max-w-md mx-auto p-4' },
+          e('div', { className: 'bg-white rounded-xl shadow-lg overflow-hidden' },
+            
+            // Success Banner
+            showSuccess && e('div', { className: 'bg-emerald-500 px-6 py-3 flex items-center gap-3 slide-in' },
+              e(CheckCircle, { className: 'text-white' }),
+              e('span', { className: 'text-white font-medium' }, '¡Entrada registrada exitosamente!')
+            ),
+
+            // Header
+            e('div', { className: 'bg-gradient-to-r from-[#00C7D1] to-[#00a8b0] px-6 py-5' },
+              e('h2', { className: 'text-white text-2xl font-semibold mb-1' }, 'En Turno Activo'),
+              e('p', { className: 'text-white text-sm opacity-90 capitalize' }, formattedDate)
+            ),
+
+            // Active Status
+            e('div', { className: 'px-6 py-8' },
+              
+              // Status Indicator
+              e('div', { className: 'flex items-center justify-center mb-6' },
+                e('div', { className: 'inline-flex items-center gap-2 bg-emerald-50 border-2 border-emerald-400 rounded-full px-4 py-2' },
+                  e('span', { className: 'flex h-3 w-3' },
+                    e('span', { className: 'animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75' }),
+                    e('span', { className: 'relative inline-flex rounded-full h-3 w-3 bg-emerald-500' })
+                  ),
+                  e('span', { className: 'text-emerald-700 font-bold text-sm' }, 
+                    'ACTIVO'
+                  )
+                )
+              ),
+
+              // Time Display
+              e('div', { className: 'bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 mb-6 text-center' },
+                e('p', { className: 'text-gray-600 text-sm mb-2' }, 'Tiempo Trabajado'),
+                e('p', { className: 'text-5xl font-bold text-[#1D2633] mb-4 font-mono' }, 
+                  calculateElapsedTime()
+                ),
+                e('div', { className: 'grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200' },
+                  e('div', {},
+                    e('p', { className: 'text-xs text-gray-500 mb-1' }, 'Entrada'),
+                    e('p', { className: 'text-lg font-bold text-[#00C7D1]' }, 
+                      clockInTime ? formatTime(clockInTime).slice(0, 5) : '--:--'
+                    )
+                  ),
+                  e('div', {},
+                    e('p', { className: 'text-xs text-gray-500 mb-1' }, 'Salida Estimada'),
+                    e('p', { className: 'text-lg font-bold text-gray-700' }, '15:00')
+                  )
+                )
+              ),
+
+              // Clock Out Button
+              e('button', {
+                onClick: handleClockOut,
+                className: 'w-full bg-[#1D2633] hover:bg-[#2a3544] text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3 shadow-lg'
+              },
+                e(LogOut, { className: 'w-6 h-6' }),
+                e('span', { className: 'text-lg' }, 'Terminar Turno')
+              ),
+
+              // Location Indicator
+              e('div', { className: 'flex items-center justify-center gap-2 text-gray-500 mt-6' },
+                e(MapPin, { className: 'w-4 h-4' }),
+                e('span', { className: 'text-xs' }, 'Planta Cuautitlán - Monitoreo Activo')
+              )
+            )
+          )
+        );
+      }
+
+      // POST-SHIFT VIEW
+      if (status === 'post-shift') {
+        const clockOutTime = new Date();
+        const hoursWorked = ((clockOutTime - clockInTime) / (1000 * 60 * 60)).toFixed(2);
+
+        return e('div', { className: 'w-full max-w-md mx-auto p-4' },
+          e('div', { className: 'bg-white rounded-xl shadow-lg overflow-hidden' },
+            
+            // Header
+            e('div', { className: 'bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-5 text-center' },
+              e('div', { className: 'flex justify-center mb-3' },
+                e(CheckCircle, { className: 'w-16 h-16 text-white' })
+              ),
+              e('h2', { className: 'text-white text-2xl font-semibold mb-1' }, '¡Turno Completado!'),
+              e('p', { className: 'text-white text-sm opacity-90' }, 'Gracias por tu trabajo, Carlos')
+            ),
+
+            // Summary
+            e('div', { className: 'px-6 py-8' },
+              
+              // Today's Shift Summary
+              e('div', { className: 'bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 mb-6' },
+                e('h3', { className: 'text-[#1D2633] font-semibold mb-4 text-center' }, 
+                  formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1)
+                ),
+                e('div', { className: 'grid grid-cols-3 gap-4 text-center' },
+                  e('div', {},
+                    e('p', { className: 'text-xs text-gray-500 mb-1' }, 'Entrada'),
+                    e('p', { className: 'text-xl font-bold text-[#00C7D1]' }, 
+                      formatTime(clockInTime).slice(0, 5)
+                    )
+                  ),
+                  e('div', {},
+                    e('p', { className: 'text-xs text-gray-500 mb-1' }, 'Salida'),
+                    e('p', { className: 'text-xl font-bold text-[#00C7D1]' }, 
+                      formatTime(clockOutTime).slice(0, 5)
+                    )
+                  ),
+                  e('div', {},
+                    e('p', { className: 'text-xs text-gray-500 mb-1' }, 'Total'),
+                    e('p', { className: 'text-xl font-bold text-emerald-600' }, hoursWorked),
+                    e('p', { className: 'text-xs text-gray-500' }, 'horas')
+                  )
+                )
+              ),
+
+              // Weekly Summary
+              e('div', { className: 'bg-[#1D2633] rounded-xl p-6 mb-6 text-center' },
+                e('p', { className: 'text-gray-400 text-sm mb-2' }, 'Horas esta semana'),
+                e('p', { className: 'text-4xl font-bold text-[#00C7D1] mb-1' }, '32.18'),
+                e('p', { className: 'text-gray-400 text-xs' }, 'de 40 horas programadas')
+              ),
+
+              // Next Shift
+              e('div', { className: 'border border-gray-200 rounded-lg p-4 text-center' },
+                e('p', { className: 'text-gray-600 text-sm mb-1' }, 'Próximo Turno'),
+                e('p', { className: 'text-lg font-bold text-[#1D2633]' }, 'Mié, 11 Feb'),
+                e('p', { className: 'text-sm text-gray-600' }, '07:00 - 15:00')
+              ),
+
+              // Done Button
+              e('button', {
+                onClick: () => setStatus('pre-shift'),
+                className: 'w-full mt-6 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200'
+              },
+                'Cerrar'
+              )
+            )
+          )
+        );
+      }
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(
@@ -124,3 +391,43 @@
   </script>
 </body>
 </html>
+```
+
+## What's New:
+
+### **Three Dynamic States:**
+
+1. **Pre-Shift (Initial View)**
+   - Clock-in button with animation
+   - Assigned shift time display
+   - **Past shift history** showing last 3 shifts with hours worked
+   - Geofencing status
+
+2. **On-Shift (Active)**
+   - **Success banner** slides in after clock-in
+   - **Live elapsed time counter** updates every second
+   - Shows clock-in time and estimated clock-out
+   - Active status indicator with pulse animation
+   - **"Terminar Turno" button** to clock out
+   - Location monitoring display
+
+3. **Post-Shift (Completed)**
+   - **Completion celebration** with checkmark
+   - **Shift summary**: exact in/out times and total hours
+   - **Weekly hours tracker** (32.18 / 40 hours)
+   - **Next shift preview**
+   - Reset button to return to pre-shift view
+
+### **Key Features for Demo:**
+
+✅ **Real-time clock** - Shows actual elapsed time while on shift  
+✅ **State persistence feel** - Flows naturally through clock-in → active → clock-out  
+✅ **Historical context** - Past shifts provide credibility  
+✅ **Gamification** - Weekly hours progress creates engagement  
+✅ **Mobile-optimized** - All interactions work on touch devices  
+
+### **For Staffbase Integration:**
+
+Same simple configuration:
+```
+extract -selector:body -scope:inner
