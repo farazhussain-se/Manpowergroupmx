@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workday Payroll Widget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded flex items-center justify-center" style="background-color: #005CB9;">
+                        <span class="text-white font-bold text-sm">W</span>
+                    </div>
+                    <span class="text-gray-400 text-xs font-medium">WORKDAY</span>
+                </div>
+                <h2 class="font-semibold text-lg" style="color: #005CB9;">Mi Nómina</h2>
+            </div>
+
+            <!-- Hero Metric -->
+            <div class="px-6 pt-6 pb-4">
+                <div class="text-gray-500 text-sm font-medium mb-1">Pago Neto</div>
+                <div class="text-4xl font-bold text-gray-900 mb-3">
+                    $3,450.00 <span class="text-lg text-gray-500 font-normal">MXN</span>
+                </div>
+                
+                <!-- Context -->
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="text-gray-600 text-sm">Periodo: 1 - 15 Feb 2026</span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                        <span class="text-green-600">✓</span>
+                        Pagado
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="px-6 py-4">
+                <div class="text-gray-500 text-xs font-medium mb-3 uppercase tracking-wide">
+                    Historial de Pagos
+                </div>
+                <div class="flex items-end justify-between gap-2 h-24">
+                    <!-- Bar 1 -->
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full flex items-end justify-center h-20">
+                            <div class="w-full rounded-t bg-gray-200" style="height: 92.8%;"></div>
+                        </div>
+                        <span class="text-[10px] text-gray-500 text-center leading-tight">Dic 16-31</span>
+                    </div>
+                    <!-- Bar 2 -->
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full flex items-end justify-center h-20">
+                            <div class="w-full rounded-t bg-gray-200" style="height: 98%;"></div>
+                        </div>
+                        <span class="text-[10px] text-gray-500 text-center leading-tight">Ene 1-15</span>
+                    </div>
+                    <!-- Bar 3 -->
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full flex items-end justify-center h-20">
+                            <div class="w-full rounded-t bg-gray-200" style="height: 99.1%;"></div>
+                        </div>
+                        <span class="text-[10px] text-gray-500 text-center leading-tight">Ene 16-31</span>
+                    </div>
+                    <!-- Bar 4 (Latest) -->
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full flex items-end justify-center h-20">
+                            <div class="w-full rounded-t" style="height: 100%; background-color: #005CB9;"></div>
+                        </div>
+                        <span class="text-[10px] text-gray-500 text-center leading-tight">Feb 1-15</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="px-6 pb-6 pt-2">
+                <button class="w-full py-2.5 px-4 font-semibold rounded transition-colors duration-200 hover:text-white" 
+                        style="border: 2px solid #005CB9; color: #005CB9;"
+                        onmouseover="this.style.backgroundColor='#005CB9'; this.style.color='white';"
+                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#005CB9';">
+                    Ver Recibo (PDF)
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
