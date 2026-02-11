@@ -4,73 +4,82 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .manpower-navy { background-color: #1D2633; }
-        .manpower-teal { color: #00C7D1; }
+        .bg-navy { background-color: #1D2633; }
         
-        /* Animación de scroll infinito para las alertas */
-        @keyframes scroll {
+        /* Animación de scroll */
+        @keyframes scrollAlert {
             0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+            100% { transform: translateX(-150%); }
         }
-        .scroll-text {
+        
+        .animate-scroll {
             display: inline-block;
             white-space: nowrap;
-            animation: scroll 20s linear infinite;
+            animation: scrollAlert 25s linear infinite;
         }
-        .scroll-container:hover .scroll-text {
-            animation-play-state: paused;
-        }
-        
-        /* Estado colapsado */
-        .banner-collapsed {
-            height: 4px !important;
+
+        /* Estado Colapsado: Transición a barra sólida azul */
+        .alert-minimized {
+            height: 6px !important;
+            background-color: #1D2633 !important; /* Manpower Navy */
+            border: none !important;
             padding: 0 !important;
-            overflow: hidden;
-            background-color: #1D2633; /* Manpower Navy */
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 1.5rem !important;
+        }
+
+        .alert-minimized * {
+            display: none !important;
+        }
+
+        .transition-all-custom {
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         }
     </style>
 </head>
-<body class="bg-gray-100 p-4">
+<body class="bg-gray-100 p-6">
 
-    <div id="alertStrip" class="relative w-full max-w-7xl mx-auto bg-amber-50 border-l-4 border-amber-500 shadow-sm transition-all duration-500 ease-in-out mb-4 rounded-r-lg overflow-hidden h-12 flex items-center">
+    <div id="mainAlert" class="relative w-full max-w-7xl mx-auto bg-[#EF4444] text-white shadow-lg overflow-hidden h-12 flex items-center transition-all-custom border-b-2 border-red-700">
         
-        <div class="z-10 bg-amber-50 px-4 flex items-center gap-2 border-r border-amber-200 h-full shrink-0">
-            <i data-lucide="factory" class="w-4 h-4 text-amber-600"></i>
-            <span class="text-[10px] font-black text-navy uppercase tracking-tighter">Planta Cuautitlán II</span>
+        <div class="z-20 bg-[#EF4444] px-4 flex items-center gap-2 h-full shrink-0 border-r border-red-400">
+            <span class="flex h-2 w-2 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+            <span class="text-[11px] font-black uppercase tracking-tighter">Planta Automotriz Saltillo</span>
         </div>
 
-        <div class="scroll-container overflow-hidden flex-grow relative h-full flex items-center">
-            <div class="scroll-text text-xs font-medium text-amber-900">
-                <span class="mx-8 uppercase">⚠️ ALERTA: Retraso en Turno B - Falta 3 operadores de montacargas</span>
-                <span class="mx-8 uppercase">⚠️ URGENTE: Documentación REPSE pendiente para 12 asociados en línea de ensamble</span>
-                <span class="mx-8 uppercase">⚠️ AVISO: Auditoría de Seguridad programada para mañana 09:00 AM</span>
+        <div class="flex-grow overflow-hidden relative h-full flex items-center italic">
+            <div class="animate-scroll text-[12px] font-bold uppercase tracking-wide">
+                ⚠️ Incidencia Crítica: 8 vacantes sin cubrir para el turno de noche • 
+                ⚠️ Alerta REPSE: 3 asociados bloqueados en acceso por documentos vencidos • 
+                ⚠️ Paro de Línea 4: Requerimos 2 técnicos de mantenimiento urgente •
             </div>
         </div>
 
-        <div class="z-10 bg-amber-50 px-4 flex items-center h-full shrink-0">
-            <button onclick="acknowledgeAlert()" class="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-bold px-3 py-1.5 rounded transition-colors uppercase tracking-widest shadow-sm">
-                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                Aceptar
+        <div class="z-20 bg-[#EF4444] px-4 flex items-center h-full shrink-0">
+            <button onclick="dismissAlert()" class="bg-white text-[#EF4444] hover:bg-red-50 text-[10px] font-black px-4 py-1.5 rounded uppercase tracking-widest transition-transform active:scale-95 shadow-md">
+                Aceptar Alerta
             </button>
         </div>
     </div>
 
-    <p id="helpText" class="text-[10px] text-gray-400 text-center uppercase tracking-widest">Haz clic en 'Aceptar' para colapsar la barra de alertas</p>
+    <div class="max-w-7xl mx-auto mt-8 opacity-40">
+        <div class="h-64 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-sm">
+            Resto del Dashboard
+        </div>
+    </div>
 
     <script>
         // Inicializar iconos
         lucide.createIcons();
 
-        function acknowledgeAlert() {
-            const strip = document.getElementById('alertStrip');
-            const help = document.getElementById('helpText');
+        function dismissAlert() {
+            const banner = document.getElementById('mainAlert');
             
-            // Colapsar el banner
-            strip.classList.add('banner-collapsed');
+            // Aplicar la clase de minimización
+            banner.classList.add('alert-minimized');
             
-            // Opcional: Remover el texto de ayuda
-            if(help) help.style.opacity = '0';
+            console.log("Alerta reconocida por el reclutador. Estado: Colapsado.");
         }
     </script>
 </body>
