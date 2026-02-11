@@ -1,85 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManpowerGroup | Recruiter Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; color: #1D2633; margin: 0; padding: 0; }
+        .manpower-teal { color: #00C7D1; }
+        .bg-manpower-teal { background-color: #00C7D1; }
         .bg-navy { background-color: #1D2633; }
         
-        /* Animación de scroll */
+        /* Animación de Alerta Roja */
         @keyframes scrollAlert {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-150%); }
         }
-        
-        .animate-scroll {
-            display: inline-block;
-            white-space: nowrap;
-            animation: scrollAlert 25s linear infinite;
-        }
+        .animate-scroll { display: inline-block; white-space: nowrap; animation: scrollAlert 25s linear infinite; }
 
-        /* Estado Colapsado: Transición a barra sólida azul */
+        /* Colapso a barra azul sólida */
         .alert-minimized {
-            height: 6px !important;
-            background-color: #1D2633 !important; /* Manpower Navy */
+            height: 8px !important;
+            background-color: #1D2633 !important;
             border: none !important;
             padding: 0 !important;
-            margin-bottom: 1.5rem !important;
         }
+        .alert-minimized * { display: none !important; }
 
-        .alert-minimized * {
-            display: none !important;
-        }
+        .transition-all-custom { transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
 
-        .transition-all-custom {
-            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        .status-pulse {
+            width: 10px; height: 10px; border-radius: 50%; display: inline-block; position: relative;
         }
+        .status-pulse::after {
+            content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            animation: pulse 1.5s infinite; background: inherit; opacity: 0.6;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
     </style>
 </head>
-<body class="bg-gray-100 p-6">
+<body>
 
-    <div id="mainAlert" class="relative w-full max-w-7xl mx-auto bg-[#EF4444] text-white shadow-lg overflow-hidden h-12 flex items-center transition-all-custom border-b-2 border-red-700">
-        
+    <div id="mainAlert" class="relative w-full bg-[#EF4444] text-white shadow-lg overflow-hidden h-12 flex items-center transition-all-custom border-b-2 border-red-700 z-50">
         <div class="z-20 bg-[#EF4444] px-4 flex items-center gap-2 h-full shrink-0 border-r border-red-400">
             <span class="flex h-2 w-2 relative">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
             </span>
-            <span class="text-[11px] font-black uppercase tracking-tighter">Planta Automotriz Saltillo</span>
+            <span class="text-[11px] font-black uppercase tracking-tighter">ALERTA PLANTA SALTILLO</span>
         </div>
-
         <div class="flex-grow overflow-hidden relative h-full flex items-center italic">
             <div class="animate-scroll text-[12px] font-bold uppercase tracking-wide">
-                ⚠️ Incidencia Crítica: 8 vacantes sin cubrir para el turno de noche • 
-                ⚠️ Alerta REPSE: 3 asociados bloqueados en acceso por documentos vencidos • 
-                ⚠️ Paro de Línea 4: Requerimos 2 técnicos de mantenimiento urgente •
+                ⚠️ Incidencia Crítica: 8 vacantes sin cubrir para el turno de noche • ⚠️ Alerta REPSE: Documentos vencidos en línea de ensamble • ⚠️ Urgente: Paro de línea por falta de personal técnico •
             </div>
         </div>
-
         <div class="z-20 bg-[#EF4444] px-4 flex items-center h-full shrink-0">
-            <button onclick="dismissAlert()" class="bg-white text-[#EF4444] hover:bg-red-50 text-[10px] font-black px-4 py-1.5 rounded uppercase tracking-widest transition-transform active:scale-95 shadow-md">
-                Aceptar Alerta
+            <button onclick="dismissAlert()" class="bg-white text-[#EF4444] hover:bg-red-50 text-[10px] font-black px-4 py-1.5 rounded uppercase tracking-widest shadow-md transition-transform active:scale-95">
+                Aceptar y Archivar
             </button>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto mt-8 opacity-40">
-        <div class="h-64 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-sm">
-            Resto del Dashboard
+    <div class="max-w-7xl mx-auto p-6 space-y-6">
+        
+        <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div class="flex items-center gap-4">
+                <div class="h-8 w-8 bg-navy flex items-center justify-center rounded">
+                    <span class="text-white font-bold italic">M</span>
+                </div>
+                <h1 class="text-lg font-bold text-navy uppercase tracking-tight">Recruiter Command Center</h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <div class="text-right border-r pr-4 border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 italic">BULLHORN SYNC: LIVE</p>
+                </div>
+                <i data-lucide="settings" class="w-5 h-5 text-gray-400 cursor-pointer"></i>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+                    <h2 class="text-xs font-bold text-navy uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="check-square" class="w-4 h-4 manpower-teal"></i> Mis Tareas (PowerSuite)
+                    </h2>
+                </div>
+                <div class="p-4 space-y-3">
+                    <div class="flex items-center justify-between p-3 border border-gray-50 rounded-lg hover:border-teal-100 transition-all">
+                        <div class="flex gap-3">
+                            <input type="checkbox" class="mt-1 rounded border-gray-300 text-teal-600">
+                            <p class="text-sm font-semibold">Llamar 5 Candidatos - Coca Cola</p>
+                        </div>
+                        <i data-lucide="phone" class="w-4 h-4 text-gray-300"></i>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border border-gray-50 rounded-lg hover:border-teal-100 transition-all">
+                        <div class="flex gap-3">
+                            <input type="checkbox" class="mt-1 rounded border-gray-300 text-teal-600">
+                            <p class="text-sm font-semibold">Enviar Shortlist para Tesla</p>
+                        </div>
+                        <i data-lucide="send" class="w-4 h-4 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+                    <h2 class="text-xs font-bold text-navy uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 manpower-teal"></i> My Market Insights
+                    </h2>
+                    <span class="text-[10px] font-bold text-gray-400">IntelliReach™</span>
+                </div>
+                <div class="p-4">
+                    <p class="text-[11px] font-bold text-gray-500 uppercase mb-2">Suministro Cuautitlán</p>
+                    <div class="h-16 flex items-end gap-1 mb-4">
+                        <div class="w-full bg-gray-100 h-10"></div>
+                        <div class="w-full bg-gray-100 h-14"></div>
+                        <div class="w-full bg-manpower-teal h-6"></div>
+                    </div>
+                    <div class="p-2 bg-blue-50 border-l-4 border-blue-400 text-[11px] text-blue-900 italic">
+                        Oferta baja: Considere incremento de bono por asistencia en zona Saltillo.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h2 class="text-xs font-bold text-navy uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-4 h-4 manpower-teal"></i> MyPath™ Talent Pool
+                    </h2>
+                </div>
+                <div class="p-4 space-y-3">
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div>
+                            <p class="text-[11px] font-bold">Ricardo P. - Montacarguista DC</p>
+                            <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest">Graduado Hoy</p>
+                        </div>
+                        <button class="bg-manpower-teal text-white p-1 rounded"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-4 border-b border-gray-100">
+                    <h2 class="text-xs font-bold text-navy uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4 manpower-teal"></i> Semáforo de Clientes
+                    </h2>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="status-pulse bg-green-500"></span>
+                            <p class="text-xs font-bold">Acme Logistics (9.2/10)</p>
+                        </div>
+                        <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="status-pulse bg-yellow-400"></span>
+                            <p class="text-xs font-bold">AutoParts MX (6.5/10)</p>
+                        </div>
+                        <button class="text-[9px] bg-navy text-white px-2 py-1 rounded font-bold">LLAMAR HM</button>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="status-pulse bg-red-500"></span>
+                            <p class="text-xs font-bold text-red-600 italic">RetailStore: 3 No-shows</p>
+                        </div>
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Inicializar iconos
         lucide.createIcons();
-
         function dismissAlert() {
-            const banner = document.getElementById('mainAlert');
-            
-            // Aplicar la clase de minimización
-            banner.classList.add('alert-minimized');
-            
-            console.log("Alerta reconocida por el reclutador. Estado: Colapsado.");
+            document.getElementById('mainAlert').classList.add('alert-minimized');
         }
     </script>
 </body>
