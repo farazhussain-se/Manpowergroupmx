@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .manpower-navy { background-color: #1D2633; }
+        .manpower-teal { color: #00C7D1; }
+        
+        /* Animación de scroll infinito para las alertas */
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .scroll-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll 20s linear infinite;
+        }
+        .scroll-container:hover .scroll-text {
+            animation-play-state: paused;
+        }
+        
+        /* Estado colapsado */
+        .banner-collapsed {
+            height: 4px !important;
+            padding: 0 !important;
+            overflow: hidden;
+            background-color: #1D2633; /* Manpower Navy */
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div id="alertStrip" class="relative w-full max-w-7xl mx-auto bg-amber-50 border-l-4 border-amber-500 shadow-sm transition-all duration-500 ease-in-out mb-4 rounded-r-lg overflow-hidden h-12 flex items-center">
+        
+        <div class="z-10 bg-amber-50 px-4 flex items-center gap-2 border-r border-amber-200 h-full shrink-0">
+            <i data-lucide="factory" class="w-4 h-4 text-amber-600"></i>
+            <span class="text-[10px] font-black text-navy uppercase tracking-tighter">Planta Cuautitlán II</span>
+        </div>
+
+        <div class="scroll-container overflow-hidden flex-grow relative h-full flex items-center">
+            <div class="scroll-text text-xs font-medium text-amber-900">
+                <span class="mx-8 uppercase">⚠️ ALERTA: Retraso en Turno B - Falta 3 operadores de montacargas</span>
+                <span class="mx-8 uppercase">⚠️ URGENTE: Documentación REPSE pendiente para 12 asociados en línea de ensamble</span>
+                <span class="mx-8 uppercase">⚠️ AVISO: Auditoría de Seguridad programada para mañana 09:00 AM</span>
+            </div>
+        </div>
+
+        <div class="z-10 bg-amber-50 px-4 flex items-center h-full shrink-0">
+            <button onclick="acknowledgeAlert()" class="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-bold px-3 py-1.5 rounded transition-colors uppercase tracking-widest shadow-sm">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                Aceptar
+            </button>
+        </div>
+    </div>
+
+    <p id="helpText" class="text-[10px] text-gray-400 text-center uppercase tracking-widest">Haz clic en 'Aceptar' para colapsar la barra de alertas</p>
+
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+
+        function acknowledgeAlert() {
+            const strip = document.getElementById('alertStrip');
+            const help = document.getElementById('helpText');
+            
+            // Colapsar el banner
+            strip.classList.add('banner-collapsed');
+            
+            // Opcional: Remover el texto de ayuda
+            if(help) help.style.opacity = '0';
+        }
+    </script>
+</body>
+</html>
